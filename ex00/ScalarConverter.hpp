@@ -20,10 +20,13 @@ class	ScalarConverter {
 		ScalarConverter(void);
 		virtual ~ScalarConverter(void) = 0;
 		ScalarConverter(const ScalarConverter& other);
-		ScalarConverter&		operator=(const ScalarConverter& other);
+		ScalarConverter&	operator=(const ScalarConverter& other);
 
-		ScalarConverter(const std::string& input);
-		static void				convert(const std::string& input); 
+		static bool			isCharLitteral(const std::string& input) ;
+		static bool			isIntLitteral(const std::string& input) ;
+		static bool			isFloatLitteral(const std::string& input) ;
+		static bool			isDoubleLitteral(const std::string& input) ;
+		static void			convert(const std::string& input) ; 
 };
 
 #endif // !SCALARCONVERTER_HPP
