@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <ios>
 #include <iostream>
+#include <locale>
 #include <string>
 #include "ScalarConverter.hpp"
 
@@ -36,22 +37,45 @@ ScalarConverter&	ScalarConverter::operator=(const ScalarConverter& other) {
 }
 
 bool	ScalarConverter::isIntLitteral(const std::string &input) {
-	std::string::const_iterator it = input.begin();
+	size_t						startIndex = 0;
+	std::string::const_iterator	it;
 	
-	while (it != input.end() && std::isdigit(*it))
+	if (input.empty())
+		return (false);
+	if (input[0] == '-' || input[0] == '+')
+	{
+		if (input.length() == 1)
+			return (false);
+		startIndex = 1;
+	}
+	it = input.begin() + startIndex;
+	while (it != input.end() && isdigit(static_cast<unsigned char>(*it)))
 		++it;
-	if (!input.empty() && it == input.end())
-		return (true);
-	return (false);
+	return (it == input.end());
 }
 
 bool	ScalarConverter::isFloatLitteral(const std::string& input) {
-	size_t	foundDot = input.find('.', 0);
-	size_t	foundF = input.find('f', 0);
+	size_t						startIndex = 0;
+	std::string::const_iterator	it;
 
-	return (foundDot != std::string::npos && 
-			foundF != std::string::npos &&
-			foundF == (input.length() - 1));
+	if(input.empty())
+		return (false);
+	if (input[0] == '-' || input[0] == '+') 
+	{
+		if (input.length() == 1)
+			return (false);
+		startIndex = 1;
+	}
+	it = input.begin() + startIndex;
+	while (it != input.end() && std::isdigit(static_cast<unsigned char>(*it)))
+		++it;
+	if (it == input.end() || (*it != '.' && input[0] != '.') || (*it == '.' && it != input.end() && !std::isdigit(static_cast<unsigned char>(*(it + 1)))))
+		return (false);
+	else if ((it + 1) != input.end())
+		++it;
+	while (it != input.end() && std::isdigit(static_cast<unsigned char>(*it)))
+		++it;
+	return (it != input.end() && *it == 'f');
 }
 
 bool	ScalarConverter::isDoubleLitteral(const std::string& input) {
