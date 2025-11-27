@@ -11,9 +11,40 @@
 /* ************************************************************************** */
 
 #include <cctype>
+#include <cstddef>
 #include <iostream>
 #include <string>
 #include "ScalarConverter.hpp"
+
+static bool	isPseudoFloatLitteral(const std::string& s) {
+	return (s == "nanf" || s == "+inff" || s == "-inff");
+}
+
+static bool	isPseudoDoubleLitteral(const std::string& s) {
+	return (s == "nan" || s == "+inf" || s == "-inf");
+}
+
+static int	hasDigitBeforeDot(const std::string& s, size_t i) {
+	int	digit = 0;
+
+	while (i < s.length() && std::isdigit(static_cast<unsigned char>(s[i])))
+	{
+		digit++;
+		i++;
+	}
+	return (digit);
+}
+
+static int	hasDigitAfterDot(const std::string& s, size_t i) {
+	int	digit = 0;
+
+	while (i < s.length() && std::isdigit(static_cast<unsigned char>(s[i])))
+	{
+		digit++;
+		i++;
+	}
+	return (digit);
+}
 
 ScalarConverter::ScalarConverter(void) {
 	std::cout << "ScalarConverter Default constructor called\n";
@@ -53,45 +84,49 @@ bool	ScalarConverter::isIntLitteral(const std::string &input) {
 
 bool	ScalarConverter::isFloatLitteral(const std::string& input) {
 	size_t						startIndex = 0;
-	int							digit = 0;
-
-	if (input.empty() || input.length() <= 1)
+	
+	if (input.empty())
 		return (false);
 	if (input[0] == '-' || input[0] == '+') 
 		startIndex = 1;
-	std::string::const_iterator	it = input.begin() + startIndex;
-	while (it != input.end() && std::isdigit(static_cast<unsigned char>(*it)))
-	{
-		digit++;
-		++it;
-	}	
-	if (digit > 0 && it != input.end() && *it == '.')
-		++it;
-	else
+	int							digits = hasDigitBeforeDot(input, startIndex); 
+	std::string::const_iterator	it = input.begin() + startIndex + digits;
+	if (digits == 0 || it == input.end() || *it != '.')
 		return (false);
-	digit = 0;
-	while (it != input.end() && std::isdigit(static_cast<unsigned char>(*it)))
-	{
-		digit++;
+	else
 		++it;
-	}	
-	if (digit > 0 && it != input.end() && *it == 'f')
-	{
-		it++;
-		if (it == input.end())
-			return true;
-	}
-	return (false);
+	digits = hasDigitAfterDot(input, startIndex + digits + 1);
+	it += digits;
+	if (digits == 0 || it == input.end() || *it != 'f')
+		return (false);
+	it++;
+	return (it == input.end());
 }
 
 bool	ScalarConverter::isDoubleLitteral(const std::string& input) {
-	size_t	foundDot = input.find('.', 0);
-
-	return (foundDot != std::string::npos);
+	size_t						startIndex = 0;
+	
+	if (input.empty())
+		return (false);
+	if (input[0] == '-' || input[0] == '+') 
+		startIndex = 1;
+	int							digits = hasDigitBeforeDot(input, startIndex); 
+	std::string::const_iterator	it = input.begin() + startIndex + digits;
+	if (digits == 0 || it == input.end() || *it != '.')
+		return (false);
+	else
+		++it;
+	digits = hasDigitAfterDot(input, startIndex + digits + 1);
+	it += digits;
+	return (digits > 0 && it == input.end());
 }
 
 bool	ScalarConverter::isCharLitteral(const std::string& input) { 
 	return (input.length() == 3 && input[0] == '\'' && input[2] == '\'');
+}
+
+bool	ScalarConverter::isPseudoLitteral(const std::string &input) {
+	return (isPseudoFloatLitteral(input) || isPseudoDoubleLitteral(input));
 }
 
 void	ScalarConverter::convert(const std::string& input) {
@@ -105,6 +140,8 @@ void	ScalarConverter::convert(const std::string& input) {
 		std::cout << "Input is a float litteral\n";
 	else if (ScalarConverter::isDoubleLitteral(input))
 		std::cout << "Input is a double litteral\n";
+	else if (ScalarConverter::isPseudoLitteral(input))
+		std::cout << "Input is a pseudo litteral\n";
 	
 	// TODO 
 	// detect what is the type of the litteral (char, int, float, double)
