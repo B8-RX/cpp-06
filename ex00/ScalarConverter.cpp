@@ -11,10 +11,7 @@
 /* ************************************************************************** */
 
 #include <cctype>
-#include <cstddef>
-#include <ios>
 #include <iostream>
-#include <locale>
 #include <string>
 #include "ScalarConverter.hpp"
 
@@ -56,26 +53,35 @@ bool	ScalarConverter::isIntLitteral(const std::string &input) {
 
 bool	ScalarConverter::isFloatLitteral(const std::string& input) {
 	size_t						startIndex = 0;
-	std::string::const_iterator	it;
+	int							digit = 0;
 
-	if(input.empty())
+	if (input.empty() || input.length() <= 1)
 		return (false);
 	if (input[0] == '-' || input[0] == '+') 
-	{
-		if (input.length() == 1)
-			return (false);
 		startIndex = 1;
-	}
-	it = input.begin() + startIndex;
+	std::string::const_iterator	it = input.begin() + startIndex;
 	while (it != input.end() && std::isdigit(static_cast<unsigned char>(*it)))
+	{
+		digit++;
 		++it;
-	if (it == input.end() || (*it != '.' && input[0] != '.') || (*it == '.' && it != input.end() && !std::isdigit(static_cast<unsigned char>(*(it + 1)))))
+	}	
+	if (digit > 0 && it != input.end() && *it == '.')
+		++it;
+	else
 		return (false);
-	else if ((it + 1) != input.end())
-		++it;
+	digit = 0;
 	while (it != input.end() && std::isdigit(static_cast<unsigned char>(*it)))
+	{
+		digit++;
 		++it;
-	return (it != input.end() && *it == 'f');
+	}	
+	if (digit > 0 && it != input.end() && *it == 'f')
+	{
+		it++;
+		if (it == input.end())
+			return true;
+	}
+	return (false);
 }
 
 bool	ScalarConverter::isDoubleLitteral(const std::string& input) {
