@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <cctype>
-#include <cstddef>
 #include <iostream>
+#include <limits>
+#include <sstream>
 #include <string>
 #include "ScalarConverter.hpp"
 
@@ -46,21 +46,17 @@ static int	hasDigitAfterDot(const std::string& s, size_t i) {
 	return (digit);
 }
 
-ScalarConverter::ScalarConverter(void) {
-	std::cout << "ScalarConverter Default constructor called\n";
-}
+ScalarConverter::ScalarConverter(void) {}
 
 ScalarConverter::~ScalarConverter(void) {
 }
 
 ScalarConverter::ScalarConverter(const ScalarConverter& other) {
 	(void)other;
-	std::cout << "ScalarConverter Copy constructor called\n";
 }
 
 ScalarConverter&	ScalarConverter::operator=(const ScalarConverter& other) {
 	(void)other;
-	std::cout << "ScalarConverter Copy assignment operator called\n";
 	return (*this);
 }
 
@@ -129,33 +125,73 @@ bool	ScalarConverter::isPseudoLitteral(const std::string &input) {
 	return (isPseudoFloatLitteral(input) || isPseudoDoubleLitteral(input));
 }
 
-void	ScalarConverter::convert(const std::string& input) {
-	std::cout << "ScalarConverter convert method called\n";
+static double	convertType(const std::string& inputType, const std::string& inputValue) {
+	double				res = 0;
+
+	if (inputType == "pseudo")
+	{
+		if (inputValue == "nanf" || inputValue == "nan")
+			res = std::numeric_limits<double>::quiet_NaN();
+		else if (inputValue == "+inff" || inputValue == "+inf")
+			res = std::numeric_limits<double>::infinity();
+		else
+			res = -std::numeric_limits<double>::infinity();
+	}
+	else if (inputType == "char")
+		res = static_cast<double>(inputValue[1]);
+	else if (inputType == "int")
+	{
+		std::istringstream	iss(inputValue);
+		int					tmp;
+
+		iss >> tmp;
+		res = static_cast<double>(tmp);
+	}
+	else if (inputType == "float")
+	{
+		std::string			tmpVal = inputValue;
+
+		tmpVal.erase(tmpVal.length() - 1, 1);
+		std::istringstream	iss(tmpVal);
+		float	tmp;
+		
+		iss >> tmp;
+		res = static_cast<double>(tmp);
+	}
+	else if (inputType == "double")
+	{
+		std::istringstream	iss(inputValue);
+		
+		iss >> res;
+	}
+	return (res);
+}
+
+void	ScalarConverter::convert(const std::string& inputValue) {
+	std::string	inputType;
+	double		res; 
 	
-	if (ScalarConverter::isIntLitteral(input))
-		std::cout << "Input is an int litteral\n";
-	else if (ScalarConverter::isCharLitteral(input))
-		std::cout << "Input is a char litteral\n";
-	else if (ScalarConverter::isFloatLitteral(input))
-		std::cout << "Input is a float litteral\n";
-	else if (ScalarConverter::isDoubleLitteral(input))
-		std::cout << "Input is a double litteral\n";
-	else if (ScalarConverter::isPseudoLitteral(input))
-		std::cout << "Input is a pseudo litteral\n";
-	
+	if (ScalarConverter::isPseudoLitteral(inputValue))
+		inputType = "pseudo";
+	else if (ScalarConverter::isCharLitteral(inputValue))
+		inputType = "char";
+	else if (ScalarConverter::isIntLitteral(inputValue))
+		inputType = "int";
+	else if (ScalarConverter::isFloatLitteral(inputValue))
+		inputType = "float";
+	else if (ScalarConverter::isDoubleLitteral(inputValue))
+		inputType = "double";
+	else
+		inputType = "invalid";
+	if (inputType == "invalid")
+	{
+		std::cerr << "Error: Invalid type\n";
+		return ;
+	}
+	res = convertType(inputType, inputValue);
+}
 	// TODO 
-	// detect what is the type of the litteral (char, int, float, double)
-	// 
-	//
-	//
-	// convert from string to its type
-	//
-	//
-	// convert from its type to the 3 others scalar type
-	//
-	//
 	// check for overflow or non sens
 	//
 	//
 	// include all headers to handle limits and special values
-}
