@@ -10,8 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cctype>
 #include <iostream>
 #include <limits>
+#include <cmath>
 #include <sstream>
 #include <string>
 #include "ScalarConverter.hpp"
@@ -46,10 +48,82 @@ static int	hasDigitAfterDot(const std::string& s, size_t i) {
 	return (digit);
 }
 
+static void	printChar(double num) {
+	std::cout << "char: ";
+	if (std::isnan(num) || std::isinf(num) || num < 0 || num > 127)
+		std::cout << "impossible";
+	else if (!std::isprint(static_cast<unsigned char>(num)))
+		std::cout << "Non displayable";
+	else
+		std::cout << "'" << static_cast<char>(num) << "'";
+	std::cout << "\n";
+}
+
+static void	printFloat(double num) {
+	float	f = static_cast<float>(num);
+	
+	std::cout << "float: ";
+	if (std::isnan(static_cast<float>(f)))
+		std::cout << "nanf";
+	else if (std::isinf(static_cast<float>(f)))
+	{
+		if (std::signbit(f))
+			std::cout << "-inff";
+		else
+			std::cout << "+inff";
+	}
+	else
+	{
+		std::cout << static_cast<float>(f);
+		if (f == static_cast<int>(f))
+			std::cout << ".0";
+		std::cout << "f";
+	}
+	std::cout << "\n";
+}
+
+static void	printInt(double num)
+{
+	std::cout << "int: ";
+	if (std::isnan(num) || std::isinf(num)
+			|| num < std::numeric_limits<int>::min()
+			|| num > std::numeric_limits<int>::max())
+		std::cout << "impossible";
+	else
+		std::cout << static_cast<int>(num) << "";
+	std::cout << "\n";
+}
+
+static void	printDouble(double num) {
+	std::cout << "double: ";
+	if (std::isnan(num))
+		std::cout << "nan";
+	else if (std::isinf(num))
+	{
+		if (std::signbit(num))
+			std::cout << "-inf";
+		else
+			std::cout << "+inf";
+	}
+	else
+	{
+		std::cout << num;
+		if (num == static_cast<int>(num))
+			std::cout << ".0";
+	}
+	std::cout << "\n";
+}
+
+static void	printLitteral(double num) {
+	printChar(num);
+	printInt(num);
+	printFloat(num);
+	printDouble(num);
+}
+
 ScalarConverter::ScalarConverter(void) {}
 
-ScalarConverter::~ScalarConverter(void) {
-}
+ScalarConverter::~ScalarConverter(void) {}
 
 ScalarConverter::ScalarConverter(const ScalarConverter& other) {
 	(void)other;
@@ -73,7 +147,7 @@ bool	ScalarConverter::isIntLitteral(const std::string &input) {
 		startIndex = 1;
 	}
 	it = input.begin() + startIndex;
-	while (it != input.end() && isdigit(static_cast<unsigned char>(*it)))
+	while (it != input.end() && std::isdigit(static_cast<unsigned char>(*it)))
 		++it;
 	return (it == input.end());
 }
@@ -142,7 +216,7 @@ static double	convertType(const std::string& inputType, const std::string& input
 	else if (inputType == "int")
 	{
 		std::istringstream	iss(inputValue);
-		int					tmp;
+		long					tmp;
 
 		iss >> tmp;
 		res = static_cast<double>(tmp);
@@ -189,9 +263,5 @@ void	ScalarConverter::convert(const std::string& inputValue) {
 		return ;
 	}
 	res = convertType(inputType, inputValue);
+	printLitteral(res);
 }
-	// TODO 
-	// check for overflow or non sens
-	//
-	//
-	// include all headers to handle limits and special values
