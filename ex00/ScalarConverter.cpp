@@ -121,20 +121,7 @@ static void	printLitteral(double num) {
 	printDouble(num);
 }
 
-ScalarConverter::ScalarConverter(void) {}
-
-ScalarConverter::~ScalarConverter(void) {}
-
-ScalarConverter::ScalarConverter(const ScalarConverter& other) {
-	(void)other;
-}
-
-ScalarConverter&	ScalarConverter::operator=(const ScalarConverter& other) {
-	(void)other;
-	return (*this);
-}
-
-bool	ScalarConverter::isIntLitteral(const std::string &input) {
+static bool	isIntLitteral(const std::string &input) {
 	size_t						startIndex = 0;
 	std::string::const_iterator	it;
 	
@@ -152,7 +139,7 @@ bool	ScalarConverter::isIntLitteral(const std::string &input) {
 	return (it == input.end());
 }
 
-bool	ScalarConverter::isFloatLitteral(const std::string& input) {
+static bool	isFloatLitteral(const std::string& input) {
 	size_t						startIndex = 0;
 	
 	if (input.empty())
@@ -173,7 +160,7 @@ bool	ScalarConverter::isFloatLitteral(const std::string& input) {
 	return (it == input.end());
 }
 
-bool	ScalarConverter::isDoubleLitteral(const std::string& input) {
+static bool	isDoubleLitteral(const std::string& input) {
 	size_t						startIndex = 0;
 	
 	if (input.empty())
@@ -191,11 +178,11 @@ bool	ScalarConverter::isDoubleLitteral(const std::string& input) {
 	return (digits > 0 && it == input.end());
 }
 
-bool	ScalarConverter::isCharLitteral(const std::string& input) { 
+static bool	isCharLitteral(const std::string& input) { 
 	return (input.length() == 3 && input[0] == '\'' && input[2] == '\'');
 }
 
-bool	ScalarConverter::isPseudoLitteral(const std::string &input) {
+static bool	isPseudoLitteral(const std::string &input) {
 	return (isPseudoFloatLitteral(input) || isPseudoDoubleLitteral(input));
 }
 
@@ -245,15 +232,15 @@ void	ScalarConverter::convert(const std::string& inputValue) {
 	std::string	inputType;
 	double		res; 
 	
-	if (ScalarConverter::isPseudoLitteral(inputValue))
+	if (isPseudoLitteral(inputValue))
 		inputType = "pseudo";
-	else if (ScalarConverter::isCharLitteral(inputValue))
+	else if (isCharLitteral(inputValue))
 		inputType = "char";
-	else if (ScalarConverter::isIntLitteral(inputValue))
+	else if (isIntLitteral(inputValue))
 		inputType = "int";
-	else if (ScalarConverter::isFloatLitteral(inputValue))
+	else if (isFloatLitteral(inputValue))
 		inputType = "float";
-	else if (ScalarConverter::isDoubleLitteral(inputValue))
+	else if (isDoubleLitteral(inputValue))
 		inputType = "double";
 	else
 		inputType = "invalid";
@@ -265,3 +252,17 @@ void	ScalarConverter::convert(const std::string& inputValue) {
 	res = convertType(inputType, inputValue);
 	printLitteral(res);
 }
+
+ScalarConverter::ScalarConverter(void) {}
+
+ScalarConverter::~ScalarConverter(void) {}
+
+ScalarConverter::ScalarConverter(const ScalarConverter& other) {
+	(void)other;
+}
+
+ScalarConverter&	ScalarConverter::operator=(const ScalarConverter& other) {
+	(void)other;
+	return (*this);
+}
+

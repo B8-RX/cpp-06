@@ -17,17 +17,12 @@
 
 class	ScalarConverter {
 	public:
+		static void			convert(const std::string& input); 
+	private:
 		ScalarConverter(void);
-		virtual ~ScalarConverter(void) = 0;
+		~ScalarConverter(void);
 		ScalarConverter(const ScalarConverter& other);
 		ScalarConverter&	operator=(const ScalarConverter& other);
-
-		static bool			isCharLitteral(const std::string& input);
-		static bool			isIntLitteral(const std::string& input);
-		static bool			isFloatLitteral(const std::string& input);
-		static bool			isDoubleLitteral(const std::string& input);
-		static bool			isPseudoLitteral(const std::string& input);
-		static void			convert(const std::string& input); 
 };
 
 #endif // !SCALARCONVERTER_HPP
