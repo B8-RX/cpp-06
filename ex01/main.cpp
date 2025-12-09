@@ -17,7 +17,7 @@
 int main(void) {
 	Data* originData = new Data("soso");
 
-	std::cout << "originData ptr value = " <<  &originData << "\n";
+	std::cout << "originData ptr value = " <<  originData << "\n";
 	std::cout << "originData name = " << originData->getName() << "\n";
 	
 	uintptr_t	dataSerialized = Serializer::serialize(originData);
@@ -25,7 +25,7 @@ int main(void) {
 
 	Data*	recoveryData = Serializer::deserialize(dataSerialized);
 	
-	std::cout << "recoveryData ptr value = " << &recoveryData << "\n";
+	std::cout << "recoveryData ptr value = " << recoveryData << "\n";
 	std::cout << "recoveryData name = " << recoveryData->getName() << "\n";
 	
 	delete originData;

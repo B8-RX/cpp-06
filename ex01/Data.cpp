@@ -12,13 +12,12 @@ Data::Data(const std::string& name) {
 Data::~Data(void) {}
 
 Data::Data(const Data& other) {
-	if (this != &other)
-		*this = other;
+	*this = other;
 }
 
 Data&	Data::operator=(const Data& other) {
 	if (this != &other)
-		*this = other;
+		_name = other._name;
 	return (*this);
 }
 
