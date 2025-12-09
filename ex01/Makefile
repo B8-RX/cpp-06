@@ -1,4 +1,4 @@
-SOURCES = main.cpp Serializer.cpp 
+SOURCES = main.cpp Serializer.cpp Data.cpp 
 
 OBJECTS = $(SOURCES:.cpp=.o)
 
@@ -7,7 +7,7 @@ CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 # CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP
 
-HEADERS = Serializer.hpp
+HEADERS = Serializer.hpp Data.hpp
 
 NAME = serialize
 

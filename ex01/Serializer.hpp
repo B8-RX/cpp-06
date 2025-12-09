@@ -13,17 +13,20 @@
 #ifndef SERIALIZER_HPP
 # define SERIALIZER_HPP
 
+#include <stdint.h>
 #include <string>
+#include "Data.hpp"
+
+// class Data;
 
 class Serializer {
 	public:
-		static unintptr_t	serialize(Data* ptr);
-		static Data*		deserialize(unintptr_t raw);
+		static uintptr_t	serialize(Data* ptr);
+		static Data*		deserialize(uintptr_t raw);
 	private:
 		Serializer(void);
 		~Serializer(void);
 		Serializer(const Serializer&);
 		Serializer&	operator=(const Serializer&);
 };
-
 #endif // !SERIALIZER_HPP
