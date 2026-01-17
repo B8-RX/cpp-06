@@ -18,11 +18,11 @@
 #include <string>
 #include "ScalarConverter.hpp"
 
-static bool	isPseudoFloatLitteral(const std::string& s) {
+static bool	isPseudoFloatLiteral(const std::string& s) {
 	return (s == "nanf" || s == "+inff" || s == "-inff");
 }
 
-static bool	isPseudoDoubleLitteral(const std::string& s) {
+static bool	isPseudoDoubleLiteral(const std::string& s) {
 	return (s == "nan" || s == "+inf" || s == "-inf");
 }
 
@@ -63,9 +63,9 @@ static void	printFloat(double num) {
 	float	f = static_cast<float>(num);
 	
 	std::cout << "float: ";
-	if (std::isnan(static_cast<float>(f)))
+	if (std::isnan(f))
 		std::cout << "nanf";
-	else if (std::isinf(static_cast<float>(f)))
+	else if (std::isinf(f))
 	{
 		if (std::signbit(f))
 			std::cout << "-inff";
@@ -86,8 +86,8 @@ static void	printInt(double num)
 {
 	std::cout << "int: ";
 	if (std::isnan(num) || std::isinf(num)
-			|| num < std::numeric_limits<int>::min()
-			|| num > std::numeric_limits<int>::max())
+			|| num < static_cast<double>(std::numeric_limits<int>::min())
+			|| num > static_cast<double>(std::numeric_limits<int>::max()))
 		std::cout << "impossible";
 	else
 		std::cout << static_cast<int>(num) << "";
@@ -114,14 +114,14 @@ static void	printDouble(double num) {
 	std::cout << "\n";
 }
 
-static void	printLitteral(double num) {
+static void	printLiteral(double num) {
 	printChar(num);
 	printInt(num);
 	printFloat(num);
 	printDouble(num);
 }
 
-static bool	isIntLitteral(const std::string &input) {
+static bool	isIntLiteral(const std::string &input) {
 	size_t						startIndex = 0;
 	std::string::const_iterator	it;
 	
@@ -139,7 +139,7 @@ static bool	isIntLitteral(const std::string &input) {
 	return (it == input.end());
 }
 
-static bool	isFloatLitteral(const std::string& input) {
+static bool	isFloatLiteral(const std::string& input) {
 	size_t						startIndex = 0;
 	
 	if (input.empty())
@@ -160,7 +160,7 @@ static bool	isFloatLitteral(const std::string& input) {
 	return (it == input.end());
 }
 
-static bool	isDoubleLitteral(const std::string& input) {
+static bool	isDoubleLiteral(const std::string& input) {
 	size_t						startIndex = 0;
 	
 	if (input.empty())
@@ -178,12 +178,12 @@ static bool	isDoubleLitteral(const std::string& input) {
 	return (digits > 0 && it == input.end());
 }
 
-static bool	isCharLitteral(const std::string& input) { 
+static bool	isCharLiteral(const std::string& input) { 
 	return (input.length() == 3 && input[0] == '\'' && input[2] == '\'');
 }
 
-static bool	isPseudoLitteral(const std::string &input) {
-	return (isPseudoFloatLitteral(input) || isPseudoDoubleLitteral(input));
+static bool	isPseudoLiteral(const std::string &input) {
+	return (isPseudoFloatLiteral(input) || isPseudoDoubleLiteral(input));
 }
 
 static double	convertType(const std::string& inputType, const std::string& inputValue) {
@@ -211,7 +211,6 @@ static double	convertType(const std::string& inputType, const std::string& input
 	else if (inputType == "float")
 	{
 		std::string			tmpVal = inputValue;
-
 		tmpVal.erase(tmpVal.length() - 1, 1);
 		std::istringstream	iss(tmpVal);
 		float	tmp;
@@ -232,25 +231,23 @@ void	ScalarConverter::convert(const std::string& inputValue) {
 	std::string	inputType;
 	double		res; 
 	
-	if (isPseudoLitteral(inputValue))
+	if (isPseudoLiteral(inputValue))
 		inputType = "pseudo";
-	else if (isCharLitteral(inputValue))
+	else if (isCharLiteral(inputValue))
 		inputType = "char";
-	else if (isIntLitteral(inputValue))
+	else if (isIntLiteral(inputValue))
 		inputType = "int";
-	else if (isFloatLitteral(inputValue))
+	else if (isFloatLiteral(inputValue))
 		inputType = "float";
-	else if (isDoubleLitteral(inputValue))
+	else if (isDoubleLiteral(inputValue))
 		inputType = "double";
 	else
-		inputType = "invalid";
-	if (inputType == "invalid")
 	{
 		std::cerr << "Error: Invalid type\n";
 		return ;
 	}
 	res = convertType(inputType, inputValue);
-	printLitteral(res);
+	printLiteral(res);
 }
 
 ScalarConverter::ScalarConverter(void) {}
